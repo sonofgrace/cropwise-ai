@@ -1,0 +1,27 @@
+{
+    "model_name": "Random Forest",
+    "best_cv_macro_f1": 0.9954377650360561,
+    "test_accuracy": 0.9931818181818182,
+    "test_macro_f1": 0.9931775541531639,
+    "test_weighted_f1": 0.9931775541531639,
+    "best_params": {
+        "model__n_estimators": 200,
+        "model__min_samples_split": 2,
+        "model__min_samples_leaf": 1,
+        "model__max_features": "sqrt",
+        "model__max_depth": null,
+        "model__bootstrap": false
+    },
+    "features": [
+        "n",
+        "p",
+        "k",
+        "temperature",
+        "humidity",
+        "ph",
+        "rainfall"
+    ],
+    "target": "label",
+    "random_state": 42,
+    "test_size": 0.2
+}

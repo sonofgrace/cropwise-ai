@@ -1,34 +1,58 @@
 import joblib
 import pandas as pd
 
-from src.config import MODEL_PATH
+from src.config import TUNED_MODEL_PATH, MODEL_PATH
 
 
-def load_model():
+FEATURE_ORDER = [
+    "n",
+    "p",
+    "k",
+    "temperature",
+    "humidity",
+    "ph",
+    "rainfall",
+]
+
+
+def load_model(prefer_tuned: bool = True):
     """
     Load the trained crop recommendation model.
+
+    Parameters
+    ----------
+    prefer_tuned : bool
+        If True, load the tuned model. Otherwise, load the baseline best model.
     """
-    return joblib.load(MODEL_PATH)
+    model_path = TUNED_MODEL_PATH if prefer_tuned and TUNED_MODEL_PATH.exists() else MODEL_PATH
+
+    return joblib.load(model_path)
+
+
+def prepare_input(input_data: dict) -> pd.DataFrame:
+    """
+    Prepare input data for prediction.
+    """
+    missing_features = [
+        feature for feature in FEATURE_ORDER
+        if feature not in input_data
+    ]
+
+    if missing_features:
+        raise ValueError(f"Missing required features: {missing_features}")
+
+    input_df = pd.DataFrame([input_data])
+    input_df = input_df[FEATURE_ORDER]
+
+    return input_df
 
 
 def predict_crop(input_data: dict) -> str:
     """
     Predict the best crop for a single input observation.
-
-    Parameters
-    ----------
-    input_data : dict
-        Dictionary containing values for:
-        n, p, k, temperature, humidity, ph, rainfall
-
-    Returns
-    -------
-    str
-        Predicted crop label.
     """
     model = load_model()
-
-    input_df = pd.DataFrame([input_data])
+    input_df = prepare_input(input_data)
 
     prediction = model.predict(input_df)[0]
 
@@ -40,8 +64,7 @@ def predict_crop_with_probabilities(input_data: dict) -> dict:
     Predict crop and return class probabilities.
     """
     model = load_model()
-
-    input_df = pd.DataFrame([input_data])
+    input_df = prepare_input(input_data)
 
     prediction = model.predict(input_df)[0]
     probabilities = model.predict_proba(input_df)[0]
@@ -60,8 +83,25 @@ def predict_crop_with_probabilities(input_data: dict) -> dict:
 
     return {
         "prediction": prediction,
-        "probabilities": sorted_probabilities
+        "probabilities": sorted_probabilities,
     }
+
+
+def get_top_n_recommendations(input_data: dict, n: int = 3) -> list[dict]:
+    """
+    Return the top-N crop recommendations with probabilities.
+    """
+    result = predict_crop_with_probabilities(input_data)
+
+    top_items = list(result["probabilities"].items())[:n]
+
+    return [
+        {
+            "crop": crop,
+            "probability": float(probability),
+        }
+        for crop, probability in top_items
+    ]
 
 
 if __name__ == "__main__":
@@ -78,3 +118,6 @@ if __name__ == "__main__":
     result = predict_crop_with_probabilities(sample_input)
 
     print(result)
+
+    print("\nTop 3 recommendations:")
+    print(get_top_n_recommendations(sample_input, n=3))

@@ -15,6 +15,8 @@ PROCESSED_DATA_PATH = PROCESSED_DATA_DIR / "crop_recommendation_clean.csv"
 MODEL_DIR = ROOT_DIR / "models"
 MODEL_PATH = MODEL_DIR / "crop_model.joblib"
 MODEL_METADATA_PATH = MODEL_DIR / "model_metadata.json"
+TUNED_MODEL_PATH = MODEL_DIR / "crop_model_tuned.joblib"
+TUNED_MODEL_METADATA_PATH = MODEL_DIR / "tuned_model_metadata.json"
 
 # Reports
 REPORTS_DIR = ROOT_DIR / "reports"

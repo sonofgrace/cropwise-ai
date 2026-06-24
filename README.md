@@ -147,3 +147,20 @@ The best model was saved as:
 
 ```text
 models/crop_model.joblib
+
+
+## Hyperparameter Tuning
+
+The strongest baseline models from the model comparison stage were tuned using `RandomizedSearchCV`.
+
+The tuned models included:
+
+- Random Forest
+- Extra Trees
+
+The search optimized macro-F1 using 5-fold Stratified Cross-Validation.
+
+The final tuned model was saved as:
+
+```text
+models/crop_model_tuned.joblib
