@@ -1,0 +1,39 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+
+# Virtual environment
+.venv/
+venv/
+env/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Data
+data/processed/*.csv
+data/external/*
+!data/raw/Crop_recommendation.csv
+
+# Models
+models/*.joblib
+models/*.pkl
+
+# Reports
+reports/figures/*.png
+reports/figures/*.jpg
+reports/figures/*.jpeg
+
+# IDE
+.idea/
+.vscode/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Environment variables
+.env
