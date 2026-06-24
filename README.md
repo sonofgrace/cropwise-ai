@@ -74,3 +74,42 @@ There are 22 crop classes, with 100 records per crop.
 
 Project setup completed.
 
+## Initial Data Validation
+
+The dataset contains 2,200 observations and 8 columns. Seven columns are input features, while the target variable is the crop label.
+
+The input features are:
+
+- Nitrogen
+- Phosphorus
+- Potassium
+- Temperature
+- Humidity
+- pH
+- Rainfall
+
+The target variable contains 22 crop classes, with 100 observations per crop. The dataset has no missing values and no duplicated rows.
+
+Because the classes are perfectly balanced, accuracy can be reported, but macro-F1 will be used as the primary evaluation metric to give equal importance to every crop class.
+
+## Exploratory Data Analysis
+
+Exploratory data analysis was performed to understand the structure, distribution, and separability of the crop recommendation dataset.
+
+Key findings:
+
+- The dataset is perfectly balanced across 22 crop classes.
+- All input features are numeric.
+- There are no missing values or duplicate records.
+- Feature ranges differ considerably, making scaling important for some machine learning models.
+- Crop-wise feature summaries show that different crops occupy distinct soil and climate profiles.
+- PCA visualization shows partial class separation, suggesting that the full feature space is useful for crop classification.
+
+Generated EDA visuals include:
+
+- Crop class distribution chart
+- Feature distribution plots
+- Crop-wise boxplots
+- Correlation heatmap
+- Crop feature profile heatmap
+- PCA class-separation plot
