@@ -1,0 +1,18 @@
+{
+    "best_model": "Random Forest",
+    "test_accuracy": 0.9954545454545455,
+    "test_macro_f1": 0.9954517027687758,
+    "test_weighted_f1": 0.9954517027687759,
+    "features": [
+        "n",
+        "p",
+        "k",
+        "temperature",
+        "humidity",
+        "ph",
+        "rainfall"
+    ],
+    "target": "label",
+    "random_state": 42,
+    "test_size": 0.2
+}

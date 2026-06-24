@@ -125,3 +125,25 @@ The best single predictive feature was:
 
 ```python
 best_predictive_feature = {"rainfall": 0.2582}
+
+
+## Model Training and Comparison
+
+Several supervised machine learning models were trained using all soil and climate features:
+
+- Logistic Regression
+- K-Nearest Neighbors
+- Decision Tree
+- Random Forest
+- Extra Trees
+- Gradient Boosting
+- Support Vector Machine
+
+Models were evaluated using 5-fold Stratified Cross-Validation on the training data. The primary evaluation metric was macro-F1.
+
+Tree-based ensemble models performed best, especially Random Forest and Extra Trees. These models are well-suited to this dataset because they can capture non-linear relationships and interactions between soil nutrients and climate conditions.
+
+The best model was saved as:
+
+```text
+models/crop_model.joblib
