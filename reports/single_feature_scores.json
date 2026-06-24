@@ -1,0 +1,14 @@
+{
+    "best_predictive_feature": {
+        "rainfall": 0.2582
+    },
+    "all_feature_scores": {
+        "rainfall": 0.2582,
+        "humidity": 0.2574,
+        "k": 0.1911,
+        "p": 0.151,
+        "temperature": 0.134,
+        "n": 0.1074,
+        "ph": 0.081
+    }
+}

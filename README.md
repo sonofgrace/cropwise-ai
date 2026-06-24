@@ -113,3 +113,15 @@ Generated EDA visuals include:
 - Correlation heatmap
 - Crop feature profile heatmap
 - PCA class-separation plot
+
+
+## Single-Feature Baseline
+
+To establish a simple baseline, each input feature was evaluated individually using a Logistic Regression classifier and 5-fold Stratified Cross-Validation.
+
+The primary metric was macro-F1, which gives equal importance to all 22 crop classes.
+
+The best single predictive feature was:
+
+```python
+best_predictive_feature = {"rainfall": 0.2582}
