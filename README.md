@@ -164,3 +164,26 @@ The final tuned model was saved as:
 
 ```text
 models/crop_model_tuned.joblib
+
+
+## Explainability
+
+Explainability was added to make the crop recommendation system more transparent and interpretable.
+
+The project includes:
+
+- Global feature importance from the trained tree-based model
+- Permutation importance using macro-F1
+- Crop-profile matching for local prediction explanation
+- Top-N crop recommendations with probabilities
+
+The explanation layer helps answer not only:
+
+```text
+What crop was recommended?
+
+but also:
+
+Why was this crop recommended?
+Which input values were most consistent with the predicted crop profile?
+What were the next-best crop alternatives?
