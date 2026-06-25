@@ -1,5 +1,7 @@
 import json
 
+import sklearn
+
 import joblib
 import pandas as pd
 
@@ -149,6 +151,7 @@ def main() -> None:
         "target": TARGET_COLUMN,
         "random_state": RANDOM_STATE,
         "test_size": TEST_SIZE,
+        "scikit_learn_version": sklearn.__version__
     }
 
     with open(tuned_metadata_path, "w") as f:

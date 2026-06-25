@@ -1,6 +1,8 @@
 import json
 from pathlib import Path
 
+import sklearn
+
 import joblib
 import pandas as pd
 
@@ -154,6 +156,7 @@ def main() -> None:
         "target": TARGET_COLUMN,
         "random_state": RANDOM_STATE,
         "test_size": TEST_SIZE,
+        "scikit_learn_version": sklearn.__version__,
     }
 
     joblib.dump(best_pipeline, MODEL_PATH)

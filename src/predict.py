@@ -1,7 +1,9 @@
 import joblib
 import pandas as pd
+import sklearn
 
 from src.config import TUNED_MODEL_PATH, MODEL_PATH
+from src.config import TUNED_MODEL_METADATA_PATH, MODEL_METADATA_PATH
 
 
 FEATURE_ORDER = [
@@ -15,6 +17,33 @@ FEATURE_ORDER = [
 ]
 
 
+def check_model_version(prefer_tuned: bool = True) -> None:
+    """
+    Warn if the current scikit-learn version differs from the version used during training.
+    """
+    metadata_path = (
+        TUNED_MODEL_METADATA_PATH
+        if prefer_tuned and TUNED_MODEL_METADATA_PATH.exists()
+        else MODEL_METADATA_PATH
+    )
+
+    if not metadata_path.exists():
+        return
+
+    with open(metadata_path, "r") as f:
+        metadata = json.load(f)
+
+    trained_version = metadata.get("scikit_learn_version")
+    current_version = sklearn.__version__
+
+    if trained_version and trained_version != current_version:
+        print(
+            f"Warning: model was trained with scikit-learn {trained_version}, "
+            f"but current version is {current_version}. "
+            "Retrain the model to avoid compatibility issues."
+        )
+
+
 def load_model(prefer_tuned: bool = True):
     """
     Load the trained crop recommendation model.
@@ -24,7 +53,13 @@ def load_model(prefer_tuned: bool = True):
     prefer_tuned : bool
         If True, load the tuned model. Otherwise, load the baseline best model.
     """
-    model_path = TUNED_MODEL_PATH if prefer_tuned and TUNED_MODEL_PATH.exists() else MODEL_PATH
+    check_model_version(prefer_tuned=prefer_tuned)
+
+    model_path = (
+        TUNED_MODEL_PATH
+        if prefer_tuned and TUNED_MODEL_PATH.exists()
+        else MODEL_PATH
+    )
 
     return joblib.load(model_path)
 
