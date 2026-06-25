@@ -187,3 +187,10 @@ but also:
 Why was this crop recommended?
 Which input values were most consistent with the predicted crop profile?
 What were the next-best crop alternatives?
+
+
+### SHAP Explainability
+
+SHAP was added for class-level model interpretation. Since crop recommendation is a multi-class classification problem, SHAP explanations are generated separately for each crop class.
+
+For each selected crop, SHAP summary plots show which features push predictions toward or away from that crop. This provides a deeper explanation layer beyond standard feature importance and helps make the recommendation system more transparent.

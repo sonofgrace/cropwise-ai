@@ -4,6 +4,8 @@ import joblib
 import matplotlib.pyplot as plt
 import seaborn as sns
 
+import shap
+
 from sklearn.model_selection import train_test_split
 from sklearn.inspection import permutation_importance
 
@@ -207,6 +209,73 @@ def save_importance_plot(
     plt.close()
 
 
+def save_shap_summary_for_class(
+    model,
+    X_test: pd.DataFrame,
+    class_name: str,
+    filename: str | None = None
+) -> None:
+    """
+    Save a SHAP summary plot for a selected crop class.
+
+    Parameters
+    ----------
+    model : sklearn Pipeline
+        Trained model pipeline containing scaler and tree-based estimator.
+    X_test : pd.DataFrame
+        Test feature data before scaling.
+    class_name : str
+        Crop class to explain.
+    filename : str | None
+        Output filename. If None, a default filename is used.
+    """
+    if class_name not in model.classes_:
+        raise ValueError(
+            f"{class_name} is not a valid class. "
+            f"Available classes: {list(model.classes_)}"
+        )
+
+    scaler = model.named_steps["scaler"]
+    final_model = model.named_steps["model"]
+
+    X_test_scaled = scaler.transform(X_test)
+    X_test_scaled_df = pd.DataFrame(
+        X_test_scaled,
+        columns=FEATURE_ORDER
+    )
+
+    explainer = shap.TreeExplainer(final_model)
+    shap_values = explainer.shap_values(X_test_scaled_df)
+
+    class_index = list(model.classes_).index(class_name)
+
+    if isinstance(shap_values, list):
+        shap_values_for_class = shap_values[class_index]
+    else:
+        shap_values_for_class = shap_values[:, :, class_index]
+
+    FIGURES_DIR.mkdir(parents=True, exist_ok=True)
+
+    if filename is None:
+        filename = f"shap_summary_{class_name}.png"
+
+    shap.summary_plot(
+        shap_values_for_class,
+        X_test_scaled_df,
+        feature_names=FEATURE_ORDER,
+        show=False
+    )
+
+    plt.title(f"SHAP Summary Plot for {class_name}")
+    plt.tight_layout()
+    plt.savefig(
+        FIGURES_DIR / filename,
+        dpi=300,
+        bbox_inches="tight"
+    )
+    plt.close()
+
+
 def main() -> None:
     REPORTS_DIR.mkdir(parents=True, exist_ok=True)
     FIGURES_DIR.mkdir(parents=True, exist_ok=True)
@@ -232,6 +301,16 @@ def main() -> None:
         X_test,
         y_test
     )
+
+    selected_shap_crops = ["rice", "maize", "cotton", "banana", "coffee"]
+
+    for crop in selected_shap_crops:
+        if crop in model.classes_:
+            save_shap_summary_for_class(
+                model=model,
+                X_test=X_test,
+                class_name=crop
+            )
 
     global_importance.to_csv(
         REPORTS_DIR / "global_feature_importance.csv",
