@@ -4,7 +4,10 @@ import joblib
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-import shap
+try:
+    import shap
+except ImportError:
+    shap = None
 
 from sklearn.model_selection import train_test_split
 from sklearn.inspection import permutation_importance
@@ -176,8 +179,7 @@ def format_explanation(explanation: dict) -> str:
         input_value = item["input_value"]
         crop_average = item["predicted_crop_average"]
 
-        text += (
-            f"- {feature}: input value {input_value:.2f}, "
+        text += (f"- {feature}: input value {input_value:.2f}, "
             f"typical {prediction} average {crop_average:.2f}\n"
         )
 
@@ -229,6 +231,11 @@ def save_shap_summary_for_class(
     filename : str | None
         Output filename. If None, a default filename is used.
     """
+
+    if shap is None:
+        print("SHAP is not installed. Skipping SHAP summary plots.")
+        return
+
     if class_name not in model.classes_:
         raise ValueError(
             f"{class_name} is not a valid class. "

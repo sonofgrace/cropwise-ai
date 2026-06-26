@@ -194,3 +194,36 @@ What were the next-best crop alternatives?
 SHAP was added for class-level model interpretation. Since crop recommendation is a multi-class classification problem, SHAP explanations are generated separately for each crop class.
 
 For each selected crop, SHAP summary plots show which features push predictions toward or away from that crop. This provides a deeper explanation layer beyond standard feature importance and helps make the recommendation system more transparent.
+
+
+## Streamlit Application
+
+A Streamlit web application was built to make the model interactive and user-friendly.
+
+The app allows users to enter:
+
+- Nitrogen
+- Phosphorus
+- Potassium
+- Temperature
+- Humidity
+- Soil pH
+- Rainfall
+
+The app returns:
+
+- Recommended crop
+- Model confidence
+- Top 3 crop recommendations
+- Probability chart
+- Human-readable explanation
+- Downloadable recommendation report
+
+## Streamlit App
+
+![CropWise AI App](reports/figures/streamlit_app_screenshot.png)
+
+To run the app locally:
+
+```bash
+streamlit run app/streamlit_app.py
