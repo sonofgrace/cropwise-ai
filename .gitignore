@@ -19,8 +19,11 @@ data/external/*
 !data/raw/Crop_recommendation.csv
 
 # Models
-models/*.joblib
-models/*.pkl
+models/*
+!models/crop_model_tuned.joblib
+!models/tuned_model_metadata.json
+!models/crop_model.joblib
+!models/model_metadata.json
 
 # Reports
 reports/figures/*.png
