@@ -13,10 +13,9 @@ env/
 # Jupyter
 .ipynb_checkpoints/
 
-# Data
-data/processed/*.csv
-data/external/*
-!data/raw/Crop_recommendation.csv
+# Processed data
+data/processed/*
+!data/processed/crop_recommendation_clean.csv
 
 # Models
 models/*
