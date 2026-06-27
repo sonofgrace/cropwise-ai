@@ -1,36 +1,32 @@
 import json
-from pathlib import Path
-
-import sklearn
 
 import joblib
 import pandas as pd
-
-from sklearn.model_selection import train_test_split, StratifiedKFold, cross_validate
+import sklearn
+from sklearn.calibration import CalibratedClassifierCV
+from sklearn.ensemble import (
+    ExtraTreesClassifier,
+    GradientBoostingClassifier,
+    RandomForestClassifier,
+)
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import accuracy_score, classification_report, f1_score
+from sklearn.model_selection import StratifiedKFold, cross_validate, train_test_split
+from sklearn.neighbors import KNeighborsClassifier
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
-
-from sklearn.linear_model import LogisticRegression
-from sklearn.neighbors import KNeighborsClassifier
-from sklearn.tree import DecisionTreeClassifier
-from sklearn.ensemble import (
-    RandomForestClassifier,
-    ExtraTreesClassifier,
-    GradientBoostingClassifier
-)
 from sklearn.svm import SVC
-from sklearn.calibration import CalibratedClassifierCV
-from sklearn.metrics import accuracy_score, f1_score, classification_report
+from sklearn.tree import DecisionTreeClassifier
 
 from src.config import (
-    PROCESSED_DATA_PATH,
-    TARGET_COLUMN,
-    RANDOM_STATE,
-    TEST_SIZE,
     MODEL_DIR,
-    MODEL_PATH,
     MODEL_METADATA_PATH,
+    MODEL_PATH,
+    PROCESSED_DATA_PATH,
+    RANDOM_STATE,
     REPORTS_DIR,
+    TARGET_COLUMN,
+    TEST_SIZE,
 )
 
 

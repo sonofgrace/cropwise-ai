@@ -227,3 +227,24 @@ To run the app locally:
 
 ```bash
 streamlit run app/streamlit_app.py
+
+
+## Testing and Code Quality
+
+The project includes automated tests using `pytest`.
+
+Test coverage includes:
+
+- Data file availability
+- Required column validation
+- Missing value checks
+- Target class validation
+- Model loading
+- Prediction output structure
+- Probability consistency
+- Explainability output structure
+
+To run tests locally:
+
+```bash
+pytest

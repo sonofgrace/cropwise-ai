@@ -1,15 +1,14 @@
 import json
 
-import pandas as pd
 import matplotlib.pyplot as plt
+import pandas as pd
 import seaborn as sns
-
+from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import StratifiedKFold, cross_val_score
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
-from sklearn.linear_model import LogisticRegression
 
-from src.config import PROCESSED_DATA_PATH, TARGET_COLUMN, RANDOM_STATE, FIGURES_DIR
+from src.config import FIGURES_DIR, PROCESSED_DATA_PATH, RANDOM_STATE, TARGET_COLUMN
 
 
 def evaluate_single_features(df: pd.DataFrame) -> pd.DataFrame:

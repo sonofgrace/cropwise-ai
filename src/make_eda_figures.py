@@ -1,11 +1,10 @@
-import pandas as pd
 import matplotlib.pyplot as plt
+import pandas as pd
 import seaborn as sns
-
-from sklearn.preprocessing import StandardScaler
 from sklearn.decomposition import PCA
+from sklearn.preprocessing import StandardScaler
 
-from src.config import PROCESSED_DATA_PATH, FIGURES_DIR, TARGET_COLUMN
+from src.config import FIGURES_DIR, PROCESSED_DATA_PATH, TARGET_COLUMN
 
 
 def save_class_distribution(df: pd.DataFrame) -> None:

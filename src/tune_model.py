@@ -1,23 +1,25 @@
 import json
 
-import sklearn
-
 import joblib
 import pandas as pd
-
-from sklearn.model_selection import train_test_split, StratifiedKFold, RandomizedSearchCV
+import sklearn
+from sklearn.ensemble import ExtraTreesClassifier, RandomForestClassifier
+from sklearn.metrics import accuracy_score, classification_report, f1_score
+from sklearn.model_selection import (
+    RandomizedSearchCV,
+    StratifiedKFold,
+    train_test_split,
+)
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
-from sklearn.ensemble import RandomForestClassifier, ExtraTreesClassifier
-from sklearn.metrics import accuracy_score, f1_score, classification_report
 
 from src.config import (
-    PROCESSED_DATA_PATH,
-    TARGET_COLUMN,
-    RANDOM_STATE,
-    TEST_SIZE,
     MODEL_DIR,
+    PROCESSED_DATA_PATH,
+    RANDOM_STATE,
     REPORTS_DIR,
+    TARGET_COLUMN,
+    TEST_SIZE,
 )
 
 

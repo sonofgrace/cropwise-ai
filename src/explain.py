@@ -1,7 +1,6 @@
-import pandas as pd
 import joblib
-
 import matplotlib.pyplot as plt
+import pandas as pd
 import seaborn as sns
 
 try:
@@ -9,20 +8,19 @@ try:
 except ImportError:
     shap = None
 
-from sklearn.model_selection import train_test_split
 from sklearn.inspection import permutation_importance
+from sklearn.model_selection import train_test_split
 
 from src.config import (
-    PROCESSED_DATA_PATH,
-    TARGET_COLUMN,
-    TUNED_MODEL_PATH,
-    MODEL_PATH,
-    RANDOM_STATE,
-    TEST_SIZE,
-    REPORTS_DIR,
     FIGURES_DIR,
+    MODEL_PATH,
+    PROCESSED_DATA_PATH,
+    RANDOM_STATE,
+    REPORTS_DIR,
+    TARGET_COLUMN,
+    TEST_SIZE,
+    TUNED_MODEL_PATH,
 )
-
 
 FEATURE_ORDER = [
     "n",

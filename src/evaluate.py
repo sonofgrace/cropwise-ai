@@ -1,25 +1,25 @@
 import joblib
-import pandas as pd
 import matplotlib.pyplot as plt
+import pandas as pd
 import seaborn as sns
-
-from sklearn.model_selection import train_test_split
 from sklearn.metrics import (
-accuracy_score,
-f1_score,
-classification_report,
-confusion_matrix
+    accuracy_score,
+    classification_report,
+    confusion_matrix,
+    f1_score,
 )
+from sklearn.model_selection import train_test_split
 
 from src.config import (
-PROCESSED_DATA_PATH,
-TARGET_COLUMN,
-MODEL_PATH,
-RANDOM_STATE,
-TEST_SIZE,
-FIGURES_DIR,
-REPORTS_DIR
+    FIGURES_DIR,
+    MODEL_PATH,
+    PROCESSED_DATA_PATH,
+    RANDOM_STATE,
+    REPORTS_DIR,
+    TARGET_COLUMN,
+    TEST_SIZE,
 )
+
 
 def evaluate_saved_model() -> None:
     """

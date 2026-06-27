@@ -1,11 +1,15 @@
 import json
+
 import joblib
 import pandas as pd
 import sklearn
 
-from src.config import TUNED_MODEL_PATH, MODEL_PATH
-from src.config import TUNED_MODEL_METADATA_PATH, MODEL_METADATA_PATH
-
+from src.config import (
+    MODEL_METADATA_PATH,
+    MODEL_PATH,
+    TUNED_MODEL_METADATA_PATH,
+    TUNED_MODEL_PATH,
+)
 
 FEATURE_ORDER = [
     "n",
@@ -20,7 +24,8 @@ FEATURE_ORDER = [
 
 def check_model_version(prefer_tuned: bool = True) -> None:
     """
-    Warn if the current scikit-learn version differs from the version used during training.
+    Warn if the current scikit-learn version differs from the version
+     used during training.
     """
     metadata_path = (
         TUNED_MODEL_METADATA_PATH
@@ -106,7 +111,7 @@ def predict_crop_with_probabilities(input_data: dict) -> dict:
     probabilities = model.predict_proba(input_df)[0]
 
     class_probabilities = dict(
-        zip(model.classes_, probabilities)
+        zip(model.classes_, probabilities, strict=False)
     )
 
     sorted_probabilities = dict(

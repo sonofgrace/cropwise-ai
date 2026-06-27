@@ -1,5 +1,6 @@
 import pandas as pd
-from src.config import RAW_DATA_PATH, PROCESSED_DATA_PATH
+
+from src.config import PROCESSED_DATA_PATH, RAW_DATA_PATH
 
 
 def clean_crop_data(df: pd.DataFrame) -> pd.DataFrame:
