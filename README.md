@@ -1,96 +1,74 @@
-\# CropWise AI: Crop Recommendation System
+# CropWise AI: Explainable Crop Recommendation System
 
+## Live Demo
 
+Streamlit app: https://cropwise-ai.streamlit.app/
 
-\## Overview
+## Project Summary
 
+CropWise AI is an end-to-end machine learning crop recommendation system that recommends suitable crops using soil nutrient and climate variables.
 
+The system uses nitrogen, phosphorus, potassium, temperature, humidity, pH, and rainfall values to predict the most suitable crop among 22 crop classes. It also provides model confidence, top crop alternatives, human-readable explanations, and a downloadable recommendation report.
 
-CropWise AI is a machine learning project that recommends suitable crops based on soil nutrients and climate conditions. The system uses nitrogen, phosphorus, potassium, temperature, humidity, pH, and rainfall values to predict the most suitable crop among 22 possible crop classes.
+## App Preview
 
+![CropWise AI App](reports/figures/streamlit_app_screenshot.png)
 
+## Project Highlights
 
-\## Problem Statement
+* Built a complete machine learning workflow from data validation to deployment.
+* Performed exploratory data analysis on soil and climate variables.
+* Identified the strongest single predictive feature for crop classification.
+* Compared multiple supervised machine learning models.
+* Tuned ensemble models using cross-validation and macro-F1 optimization.
+* Added explainability through feature importance, permutation importance, SHAP analysis, and crop-profile matching.
+* Deployed an interactive Streamlit web application.
+* Added automated tests for data, model loading, prediction, and explanation functions.
+* Designed the project as a portfolio-ready ML decision-support system.
 
+## Problem Statement
 
+Farmers, agricultural extension workers, and agritech platforms often need quick, data-informed support when choosing suitable crops for specific soil and climate conditions.
 
-Farmers, agricultural extension workers, and agritech platforms often need quick, data-informed crop suitability recommendations. This project builds a crop recommendation model using soil and climate variables, with the long-term goal of turning it into an explainable and deployable decision-support tool.
+CropWise AI addresses this by building a machine learning-based crop recommendation system that uses soil nutrient and climate inputs to recommend appropriate crops. The project is designed as a decision-support tool, not a replacement for professional agronomic advice or local field validation.
 
+## Dataset
 
+The dataset contains 2,200 observations and 8 columns.
 
-\## Dataset
+### Features
 
+| Feature       | Description                    |
+| ------------- | ------------------------------ |
+| `N` / `n`     | Nitrogen content in soil       |
+| `P` / `p`     | Phosphorus content in soil     |
+| `K` / `k`     | Potassium content in soil      |
+| `temperature` | Temperature in degrees Celsius |
+| `humidity`    | Relative humidity              |
+| `ph`          | Soil pH                        |
+| `rainfall`    | Rainfall measurement           |
 
+### Target
 
-The dataset contains 2,200 records and 8 columns:
+| Target  | Description      |
+| ------- | ---------------- |
+| `label` | Recommended crop |
 
-
-
-\- N: Nitrogen content
-
-\- P: Phosphorus content
-
-\- K: Potassium content
-
-\- temperature: Temperature in degrees Celsius
-
-\- humidity: Relative humidity
-
-\- ph: Soil pH
-
-\- rainfall: Rainfall measurement
-
-\- label: Recommended crop
-
-
-
-There are 22 crop classes, with 100 records per crop.
-
-
-
-\## Project Goals
-
-
-
-\- Perform exploratory data analysis.
-
-\- Identify the most predictive individual feature.
-
-\- Build baseline and advanced classification models.
-
-\- Evaluate models using appropriate multi-class classification metrics.
-
-\- Add explainability using feature importance and SHAP.
-
-\- Deploy the model as an interactive Streamlit app.
-
-\- Extend the project toward a high-end agriculture decision-support portfolio project.
-
-
-
-\## Current Stage
-
-
-
-Project setup completed.
+The dataset contains 22 crop classes, with 100 observations per crop. This makes the target distribution perfectly balanced.
 
 ## Initial Data Validation
 
-The dataset contains 2,200 observations and 8 columns. Seven columns are input features, while the target variable is the crop label.
+Initial data validation showed that:
 
-The input features are:
+* The dataset contains 2,200 rows and 8 columns.
+* There are 7 input features and 1 target variable.
+* All input features are numeric.
+* The target variable contains 22 crop classes.
+* Each crop class has exactly 100 observations.
+* There are no missing values.
+* There are no duplicated rows.
 
-- Nitrogen
-- Phosphorus
-- Potassium
-- Temperature
-- Humidity
-- pH
-- Rainfall
-
-The target variable contains 22 crop classes, with 100 observations per crop. The dataset has no missing values and no duplicated rows.
-
-Because the classes are perfectly balanced, accuracy can be reported, but macro-F1 will be used as the primary evaluation metric to give equal importance to every crop class.
+Because the classes are balanced, accuracy is useful, but macro-F1 was selected as the primary evaluation metric because it gives equal importance to every crop class.
 
 ## Exploratory Data Analysis
 
@@ -98,56 +76,63 @@ Exploratory data analysis was performed to understand the structure, distributio
 
 Key findings:
 
-- The dataset is perfectly balanced across 22 crop classes.
-- All input features are numeric.
-- There are no missing values or duplicate records.
-- Feature ranges differ considerably, making scaling important for some machine learning models.
-- Crop-wise feature summaries show that different crops occupy distinct soil and climate profiles.
-- PCA visualization shows partial class separation, suggesting that the full feature space is useful for crop classification.
+* The dataset is perfectly balanced across all 22 crop classes.
+* All predictor variables are numeric.
+* Feature ranges differ considerably, making scaling important for models such as Logistic Regression, KNN, and SVM.
+* Crop-wise feature summaries show that different crops occupy distinct soil and climate profiles.
+* Rainfall, humidity, potassium, phosphorus, and temperature provide useful signals for distinguishing several crop classes.
+* PCA visualization shows partial crop-class separation, suggesting that the full feature space is useful for classification.
 
 Generated EDA visuals include:
 
-- Crop class distribution chart
-- Feature distribution plots
-- Crop-wise boxplots
-- Correlation heatmap
-- Crop feature profile heatmap
-- PCA class-separation plot
-
+* Crop class distribution chart
+* Feature distribution plots
+* Crop-wise boxplots
+* Correlation heatmap
+* Crop feature profile heatmap
+* PCA class-separation plot
 
 ## Single-Feature Baseline
 
 To establish a simple baseline, each input feature was evaluated individually using a Logistic Regression classifier and 5-fold Stratified Cross-Validation.
 
-The primary metric was macro-F1, which gives equal importance to all 22 crop classes.
+The primary metric was macro-F1.
 
 The best single predictive feature was:
 
 ```python
 best_predictive_feature = {"rainfall": 0.2582}
+```
 
+Rainfall had the strongest individual predictive signal. However, its macro-F1 score was still low compared with full-feature models, showing that crop recommendation requires multiple soil and climate variables rather than a single feature alone.
 
 ## Model Training and Comparison
 
 Several supervised machine learning models were trained using all soil and climate features:
 
-- Logistic Regression
-- K-Nearest Neighbors
-- Decision Tree
-- Random Forest
-- Extra Trees
-- Gradient Boosting
-- Support Vector Machine
+* Logistic Regression
+* K-Nearest Neighbors
+* Decision Tree
+* Random Forest
+* Extra Trees
+* Gradient Boosting
+* Support Vector Machine
 
-Models were evaluated using 5-fold Stratified Cross-Validation on the training data. The primary evaluation metric was macro-F1.
+Models were evaluated using 5-fold Stratified Cross-Validation on the training data.
+
+The primary metric was:
+
+```text
+macro-F1
+```
 
 Tree-based ensemble models performed best, especially Random Forest and Extra Trees. These models are well-suited to this dataset because they can capture non-linear relationships and interactions between soil nutrients and climate conditions.
 
-The best model was saved as:
+The trained baseline model was saved as:
 
 ```text
 models/crop_model.joblib
-
+```
 
 ## Hyperparameter Tuning
 
@@ -155,16 +140,24 @@ The strongest baseline models from the model comparison stage were tuned using `
 
 The tuned models included:
 
-- Random Forest
-- Extra Trees
+* Random Forest
+* Extra Trees
 
-The search optimized macro-F1 using 5-fold Stratified Cross-Validation.
+The hyperparameter search optimized macro-F1 using 5-fold Stratified Cross-Validation.
 
 The final tuned model was saved as:
 
 ```text
 models/crop_model_tuned.joblib
+```
 
+The tuned model metadata was saved as:
+
+```text
+models/tuned_model_metadata.json
+```
+
+Hyperparameter tuning helped validate the robustness of the final model, even though the untuned ensemble models already performed strongly.
 
 ## Explainability
 
@@ -172,29 +165,33 @@ Explainability was added to make the crop recommendation system more transparent
 
 The project includes:
 
-- Global feature importance from the trained tree-based model
-- Permutation importance using macro-F1
-- Crop-profile matching for local prediction explanation
-- Top-N crop recommendations with probabilities
+* Global feature importance from the trained tree-based model
+* Permutation importance using macro-F1
+* Crop-profile matching for local prediction explanation
+* Top-N crop recommendations with probabilities
+* SHAP class-level explanations
 
-The explanation layer helps answer not only:
+The explanation layer helps answer:
 
 ```text
 What crop was recommended?
+```
 
-but also:
+It also helps answer:
 
+```text
 Why was this crop recommended?
 Which input values were most consistent with the predicted crop profile?
 What were the next-best crop alternatives?
+```
 
-
-### SHAP Explainability
+## SHAP Explainability
 
 SHAP was added for class-level model interpretation. Since crop recommendation is a multi-class classification problem, SHAP explanations are generated separately for each crop class.
 
 For each selected crop, SHAP summary plots show which features push predictions toward or away from that crop. This provides a deeper explanation layer beyond standard feature importance and helps make the recommendation system more transparent.
 
+SHAP is used in the analysis workflow, while the deployed Streamlit application uses a lighter explanation system based on probabilities and crop-profile matching.
 
 ## Streamlit Application
 
@@ -202,32 +199,94 @@ A Streamlit web application was built to make the model interactive and user-fri
 
 The app allows users to enter:
 
-- Nitrogen
-- Phosphorus
-- Potassium
-- Temperature
-- Humidity
-- Soil pH
-- Rainfall
+* Nitrogen
+* Phosphorus
+* Potassium
+* Temperature
+* Humidity
+* Soil pH
+* Rainfall
 
 The app returns:
 
-- Recommended crop
-- Model confidence
-- Top 3 crop recommendations
-- Probability chart
-- Human-readable explanation
-- Downloadable recommendation report
-
-## Streamlit App
-
-![CropWise AI App](reports/figures/streamlit_app_screenshot.png)
+* Recommended crop
+* Model confidence
+* Top 3 crop recommendations
+* Probability chart
+* Human-readable explanation
+* Downloadable recommendation report
 
 To run the app locally:
 
 ```bash
 streamlit run app/streamlit_app.py
+```
 
+## Project Architecture
+
+```text
+cropwise-ai/
+│
+├── app/
+│   └── streamlit_app.py
+│
+├── data/
+│   ├── raw/
+│   │   └── Crop_recommendation.csv
+│   └── processed/
+│       └── crop_recommendation_clean.csv
+│
+├── models/
+│   ├── crop_model.joblib
+│   ├── crop_model_tuned.joblib
+│   ├── model_metadata.json
+│   └── tuned_model_metadata.json
+│
+├── notebooks/
+│   ├── 01_data_understanding.ipynb
+│   ├── 02_eda.ipynb
+│   ├── 03_single_feature_baseline.ipynb
+│   ├── 04_model_comparison.ipynb
+│   ├── 05_hyperparameter_tuning.ipynb
+│   └── 06_explainability.ipynb
+│
+├── reports/
+│   ├── figures/
+│   ├── classification_report.txt
+│   ├── model_comparison_cv_results.csv
+│   ├── hyperparameter_tuning_results.csv
+│   ├── global_feature_importance.csv
+│   └── permutation_importance.csv
+│
+├── src/
+│   ├── __init__.py
+│   ├── config.py
+│   ├── data_loader.py
+│   ├── preprocessing.py
+│   ├── validate_data.py
+│   ├── train.py
+│   ├── tune_model.py
+│   ├── evaluate.py
+│   ├── predict.py
+│   └── explain.py
+│
+├── tests/
+│   ├── test_data.py
+│   ├── test_model.py
+│   ├── test_prediction.py
+│   └── test_explain.py
+│
+├── .github/
+│   └── workflows/
+│       └── python-ci.yml
+│
+├── requirements.txt
+├── runtime.txt
+├── pyproject.toml
+├── pytest.ini
+├── README.md
+└── .gitignore
+```
 
 ## Testing and Code Quality
 
@@ -235,16 +294,151 @@ The project includes automated tests using `pytest`.
 
 Test coverage includes:
 
-- Data file availability
-- Required column validation
-- Missing value checks
-- Target class validation
-- Model loading
-- Prediction output structure
-- Probability consistency
-- Explainability output structure
+* Data file availability
+* Required column validation
+* Missing value checks
+* Target class validation
+* Model loading
+* Prediction output structure
+* Probability consistency
+* Explainability output structure
 
 To run tests locally:
 
 ```bash
 pytest
+```
+
+Code quality tools used in the project include:
+
+```bash
+ruff check .
+black .
+```
+
+A GitHub Actions workflow is included to run the project pipeline and tests automatically on push or pull request.
+
+## Results
+
+The single-feature baseline showed that rainfall had the strongest individual predictive performance among all input features. However, its score was much lower than full-feature models, confirming that crop suitability depends on a combination of soil and climate variables.
+
+Using all seven features, tree-based ensemble models achieved the strongest performance. Random Forest and Extra Trees performed especially well because they can capture non-linear interactions among soil nutrients, rainfall, humidity, temperature, and pH.
+
+| Stage                   | Method                                           | Key Finding                                                |
+| ----------------------- | ------------------------------------------------ | ---------------------------------------------------------- |
+| Single-feature baseline | Logistic Regression                              | Rainfall was the strongest individual predictor            |
+| Full model comparison   | Multiple classifiers                             | Ensemble tree-based models performed best                  |
+| Hyperparameter tuning   | RandomizedSearchCV                               | Final tuned model selected using macro-F1                  |
+| Explainability          | Feature importance, permutation importance, SHAP | Multiple soil and climate variables influenced predictions |
+| Deployment              | Streamlit                                        | Interactive crop recommendation app deployed online        |
+
+## Limitations
+
+Although the model performs strongly on the available dataset, the dataset is small, clean, balanced, and highly structured. Real-world agricultural decisions are more complex.
+
+The current model does not include:
+
+* Geographic location
+* Soil type
+* Planting season
+* Seed variety
+* Pest and disease pressure
+* Irrigation access
+* Market demand
+* Actual crop yield
+* Farmer management practices
+
+Therefore, CropWise AI should be interpreted as a crop suitability decision-support tool, not as a replacement for professional agronomic advice, local soil testing, seasonal planning, or field validation.
+
+## Future Improvements
+
+Planned improvements include:
+
+* Add location-based recommendations using latitude and longitude.
+* Integrate historical weather data from NASA POWER or Open-Meteo.
+* Add FAOSTAT or national agricultural production data.
+* Build a crop yield-risk scoring module.
+* Add interactive maps for regional crop suitability.
+* Add API endpoints using FastAPI.
+* Add model monitoring for input drift.
+* Add database support for storing user recommendations.
+* Add user authentication for saved recommendation histories.
+* Extend the app into a climate-smart agriculture decision-support platform.
+
+## How to Run Locally
+
+Clone the repository:
+
+```bash
+git clone https://github.com/sonofgrace/cropwise-ai.git
+cd cropwise-ai
+```
+
+Create and activate a virtual environment:
+
+```bash
+python -m venv .venv
+.venv\Scripts\activate
+```
+
+Install dependencies:
+
+```bash
+pip install -r requirements.txt
+```
+
+Prepare the processed dataset:
+
+```bash
+python -m src.preprocessing
+```
+
+Train the model:
+
+```bash
+python -m src.train
+```
+
+Optional: tune the model:
+
+```bash
+python -m src.tune_model
+```
+
+Run the Streamlit app:
+
+```bash
+streamlit run app/streamlit_app.py
+```
+
+## Deployment Notes
+
+For Streamlit deployment, the project uses a lightweight `requirements.txt` containing only the dependencies needed by the deployed app.
+
+SHAP is used for analysis and notebook explainability, but it is not required for the deployed Streamlit app.
+
+## Technologies Used
+
+* Python
+* Pandas
+* NumPy
+* Scikit-learn
+* Matplotlib
+* Seaborn
+* Plotly
+* Streamlit
+* Joblib
+* SHAP
+* Pytest
+* Ruff
+* Black
+* GitHub Actions
+
+## Project Status
+
+The project is complete as an end-to-end portfolio version and is currently deployed as a Streamlit application.
+
+## Author
+
+Dr. Benedict U. Nweke
+GitHub: https://github.com/sonofgrace
