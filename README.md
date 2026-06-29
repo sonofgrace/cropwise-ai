@@ -1,5 +1,20 @@
 # CropWise AI: Explainable Crop Recommendation System
 
+![Python](https://img.shields.io/badge/Python-3.11-blue)
+![Scikit-learn](https://img.shields.io/badge/ML-Scikit--learn-orange)
+![Streamlit](https://img.shields.io/badge/App-Streamlit-red)
+![Status](https://img.shields.io/badge/Status-Deployed-brightgreen)
+![License](https://img.shields.io/badge/License-MIT-lightgrey)
+
+## Quick Links
+
+- Live app: https://cropwise-ai.streamlit.app/
+- GitHub repository: https://github.com/sonofgrace/cropwise-ai
+- Main app file: `app/streamlit_app.py`
+- Training script: `src/train.py`
+- Prediction module: `src/predict.py`
+- Explainability module: `src/explain.py`
+
 ## Live Demo
 
 Streamlit app: https://cropwise-ai.streamlit.app/
