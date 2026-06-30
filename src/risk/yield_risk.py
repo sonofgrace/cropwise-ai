@@ -5,23 +5,17 @@ def calculate_climate_risk_score(climate_summary: dict) -> dict:
     """
     Calculate a simple rule-based climate risk score.
 
-    This is not a trained yield model. It is an interpretable first version of a climate-risk layer.
-    Parameters
-    ----------
-    climate_summary
-
-    Returns
-    -------
-
+    This is not a trained yield model. It is an interpretable first version
+    of a climate-risk layer.
     """
     risk_points = 0
     warnings = []
 
-    total_rainfall = climate_summary["total_rainfall"]
-    mean_temperature = climate_summary["mean_temperature"]
-    max_temperature = climate_summary["max_temperature"]
-    dry_days = climate_summary["dry_days"]
-    heavy_rain_days = climate_summary["heavy_rain_days"]
+    total_rainfall = climate_summary.get("total_rainfall", 0)
+    mean_temperature = climate_summary.get("mean_temperature", 0)
+    max_temperature = climate_summary.get("max_temperature", 0)
+    dry_days = climate_summary.get("dry_days", 0)
+    heavy_rain_days = climate_summary.get("heavy_rain_days", 0)
 
     if total_rainfall < 500:
         risk_points += 2
@@ -46,7 +40,7 @@ def calculate_climate_risk_score(climate_summary: dict) -> dict:
     if heavy_rain_days > 30:
         risk_points += 1
         warnings.append(
-            "Frequent heavy rainfall may increase erosion or waterlogging risk"
+            "Frequent heavy rainfall may increase erosion or waterlogging risk."
         )
 
     if risk_points <= 2:
@@ -57,7 +51,7 @@ def calculate_climate_risk_score(climate_summary: dict) -> dict:
         risk_level = "High"
 
     return {
-        "risk_points": risk_points,
+        "risk_score": risk_points,
         "risk_level": risk_level,
         "warnings": warnings,
-        }
+    }
