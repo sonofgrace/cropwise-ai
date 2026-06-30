@@ -266,6 +266,172 @@ def generate_report(
 
     return report
 
+
+def generate_climate_aware_report(
+    latitude: float,
+    longitude: float,
+    start_date,
+    end_date,
+    soil_input: dict,
+    model_input: dict,
+    climate_summary: dict,
+    prediction_result: dict,
+    top_recommendations: list[dict],
+    climate_risk: dict,
+) -> str:
+    """Generate a downloadable text report for the climate-aware recommendation."""
+    crop_name = prediction_result.get("prediction", "N/A")
+    confidence = prediction_result.get("confidence", 0.0)
+
+    warnings = climate_risk.get("warnings", [])
+    warning_text = "\n".join(f"- {warning}" for warning in warnings)
+    if not warning_text:
+        warning_text = "No major warnings detected."
+
+    top_recommendation_text = "\n".join(
+        f"- {item['crop'].title()}: {item['probability']:.2%}"
+        for item in top_recommendations
+    )
+
+    return f"""
+CropWise AI v2 Climate-Aware Recommendation Report
+=================================================
+
+Location
+--------
+Latitude: {latitude}
+Longitude: {longitude}
+
+Climate Period
+--------------
+Start date: {start_date}
+End date: {end_date}
+
+Soil Inputs
+-----------
+Nitrogen: {soil_input.get("n")}
+Phosphorus: {soil_input.get("p")}
+Potassium: {soil_input.get("k")}
+Soil pH: {soil_input.get("ph")}
+Humidity: {soil_input.get("humidity")}
+
+Historical Climate Summary
+--------------------------
+Mean temperature: {climate_summary.get("mean_temperature", 0):.2f} °C
+Maximum temperature: {climate_summary.get("max_temperature", 0):.2f} °C
+Minimum temperature: {climate_summary.get("min_temperature", 0):.2f} °C
+Total rainfall: {climate_summary.get("total_rainfall", 0):.2f} mm
+Mean daily rainfall: {climate_summary.get("mean_daily_rainfall", 0):.2f} mm
+Rainfall standard deviation: {climate_summary.get("rainfall_std", 0):.2f}
+Dry days: {climate_summary.get("dry_days", 0)}
+Wet days: {climate_summary.get("wet_days", 0)}
+Heavy rain days: {climate_summary.get("heavy_rain_days", 0)}
+
+Model Input Used
+----------------
+Nitrogen: {model_input.get("n")}
+Phosphorus: {model_input.get("p")}
+Potassium: {model_input.get("k")}
+Temperature: {model_input.get("temperature")}
+Humidity: {model_input.get("humidity")}
+Soil pH: {model_input.get("ph")}
+Rainfall: {model_input.get("rainfall")}
+
+Recommendation
+--------------
+Recommended crop: {crop_name.title()}
+Model confidence: {confidence:.2%}
+
+Top 3 Recommendations
+---------------------
+{top_recommendation_text}
+
+Climate Risk
+------------
+Risk score: {climate_risk.get("risk_score", "N/A")}
+Risk level: {climate_risk.get("risk_level", "N/A")}
+
+Warnings
+--------
+{warning_text}
+
+Important Note
+--------------
+This location-aware feature is experimental. The original model was trained on a structured benchmark dataset, while external climate API values may not perfectly match the training distribution.
+
+Interpret this result as decision support, not final agronomic advice. Real-world crop decisions should still consider local soil testing, planting season, seed variety, irrigation access, pest pressure, market conditions, and expert agronomic guidance.
+""".strip()
+
+
+def create_rainfall_trend_chart(weather_df: pd.DataFrame):
+    """Create rainfall trend chart from weather dataframe."""
+    chart_df = weather_df.copy()
+
+    fig = px.line(
+        chart_df,
+        x="time",
+        y="precipitation_sum",
+        title="Daily Rainfall Trend",
+        labels={
+            "time": "Date",
+            "precipitation_sum": "Rainfall / Precipitation (mm)",
+        },
+    )
+
+    fig.update_layout(height=420)
+    return fig
+
+
+def create_temperature_trend_chart(weather_df: pd.DataFrame):
+    """Create temperature trend chart from weather dataframe."""
+    chart_df = weather_df.copy()
+
+    temp_columns = [
+        "temperature_2m_mean",
+        "temperature_2m_max",
+        "temperature_2m_min",
+    ]
+
+    fig = px.line(
+        chart_df,
+        x="time",
+        y=temp_columns,
+        title="Daily Temperature Trend",
+        labels={
+            "time": "Date",
+            "value": "Temperature (°C)",
+            "variable": "Temperature Metric",
+        },
+    )
+
+    fig.update_layout(height=420)
+    return fig
+
+
+def create_top_recommendation_chart(top_recommendations: list[dict]):
+    """Create bar chart for top crop recommendations."""
+    top_df = pd.DataFrame(top_recommendations)
+    top_df["crop"] = top_df["crop"].str.title()
+
+    fig = px.bar(
+        top_df,
+        x="crop",
+        y="probability",
+        title="Top Crop Recommendation Probabilities",
+        labels={
+            "crop": "Crop",
+            "probability": "Probability",
+        },
+    )
+
+    fig.update_layout(
+        height=420,
+        yaxis_tickformat=".0%",
+    )
+
+    return fig
+
+
 def render_location_aware_tab():
     """Render the location-aware climate-smart recommendation tab."""
     st.header("Location-Aware Climate-Smart Recommendation")
@@ -372,9 +538,9 @@ def render_location_aware_tab():
 
             st.subheader("Climate Summary")
 
-            summary_col1, summary_col2, summary_col3 = st.columns(3)
+            summary_metrics_col1, summary_metrics_col2, summary_metrics_col3 = st.columns(3)
 
-            with summary_col1:
+            with summary_metrics_col1:
                 st.metric(
                     "Mean Temperature",
                     f"{climate_summary['mean_temperature']:.1f} °C",
@@ -384,7 +550,7 @@ def render_location_aware_tab():
                     f"{climate_summary['total_rainfall']:.1f} mm",
                 )
 
-            with summary_col2:
+            with summary_metrics_col2:
                 st.metric(
                     "Dry Days",
                     climate_summary["dry_days"],
@@ -394,15 +560,66 @@ def render_location_aware_tab():
                     climate_summary["wet_days"],
                 )
 
-            with summary_col3:
+            with summary_metrics_col3:
                 st.metric(
                     "Heavy Rain Days",
                     climate_summary["heavy_rain_days"],
                 )
                 st.metric(
                     "Climate Risk",
-                    climate_risk["risk_level"],
+                    climate_risk.get("risk_level", "N/A"),
                 )
+
+            climate_summary_df = pd.DataFrame(
+                [
+                    {
+                        "Metric": "Mean Temperature",
+                        "Value": f"{climate_summary['mean_temperature']:.2f} °C",
+                    },
+                    {
+                        "Metric": "Maximum Temperature",
+                        "Value": f"{climate_summary['max_temperature']:.2f} °C",
+                    },
+                    {
+                        "Metric": "Minimum Temperature",
+                        "Value": f"{climate_summary['min_temperature']:.2f} °C",
+                    },
+                    {
+                        "Metric": "Total Rainfall",
+                        "Value": f"{climate_summary['total_rainfall']:.2f} mm",
+                    },
+                    {
+                        "Metric": "Mean Daily Rainfall",
+                        "Value": f"{climate_summary['mean_daily_rainfall']:.2f} mm",
+                    },
+                    {
+                        "Metric": "Rainfall Variability",
+                        "Value": f"{climate_summary['rainfall_std']:.2f}",
+                    },
+                    {
+                        "Metric": "Dry Days",
+                        "Value": climate_summary["dry_days"],
+                    },
+                    {
+                        "Metric": "Wet Days",
+                        "Value": climate_summary["wet_days"],
+                    },
+                    {
+                        "Metric": "Heavy Rain Days",
+                        "Value": climate_summary["heavy_rain_days"],
+                    },
+                ]
+            )
+
+            st.dataframe(climate_summary_df, width="stretch")
+
+            st.subheader("Historical Climate Trends")
+
+            rainfall_fig = create_rainfall_trend_chart(weather_df)
+            st.plotly_chart(rainfall_fig, width="stretch")
+
+            temperature_fig = create_temperature_trend_chart(weather_df)
+            st.plotly_chart(temperature_fig, width="stretch")
 
             st.subheader("Recommended Crop")
 
@@ -428,11 +645,14 @@ def render_location_aware_tab():
             st.subheader("Top 3 Recommendations")
 
             top_df = pd.DataFrame(top_recommendations)
-            top_df["crop"] = top_df["crop"].str.title()
-            top_df["probability"] = top_df["probability"].map(lambda x: f"{x:.2%}")
+            top_display_df = top_df.copy()
+            top_display_df["crop"] = top_display_df["crop"].str.title()
+            top_display_df["probability"] = top_display_df["probability"].map(lambda x: f"{x:.2%}")
 
-            st.dataframe(top_df, width="stretch")
+            st.dataframe(top_display_df, width="stretch")
 
+            top_recommendation_fig = create_top_recommendation_chart(top_recommendations)
+            st.plotly_chart(top_recommendation_fig, width="stretch")
             st.subheader("Climate Risk Warnings")
 
             if climate_risk["warnings"]:
@@ -450,49 +670,18 @@ def render_location_aware_tab():
 
             st.dataframe(weather_df.head(10), width="stretch")
 
-            report_text = f"""
-CropWise AI v2 Climate-Aware Recommendation Report
-
-Location
-Latitude: {latitude}
-Longitude: {longitude}
-
-Climate Period
-Start date: {start_date}
-End date: {end_date}
-
-Climate Summary
-Mean temperature: {climate_summary['mean_temperature']:.2f} °C
-Maximum temperature: {climate_summary['max_temperature']:.2f} °C
-Minimum temperature: {climate_summary['min_temperature']:.2f} °C
-Total rainfall: {climate_summary['total_rainfall']:.2f} mm
-Mean daily rainfall: {climate_summary['mean_daily_rainfall']:.2f} mm
-Dry days: {climate_summary['dry_days']}
-Wet days: {climate_summary['wet_days']}
-Heavy rain days: {climate_summary['heavy_rain_days']}
-
-Soil Inputs
-Nitrogen: {n_value}
-Phosphorus: {p_value}
-Potassium: {k_value}
-pH: {ph_value}
-Humidity: {humidity_value}
-
-Recommendation
-Recommended crop: {crop_name.title()}
-Model confidence: {confidence:.2%}
-
-Climate Risk
-Risk score: {climate_risk.get('risk_score', climate_risk.get('score', 'N/A'))}
-Risk level: {climate_risk.get('risk_level', 'N/A')}
-
-Warnings
-{chr(10).join(climate_risk.get('warnings', [])) if climate_risk.get('warnings') else "No major warnings detected."}
-
-Important Note
-This location-aware feature is experimental. The original model was trained on a structured benchmark dataset, while external climate API data may not perfectly match the original training distribution. Interpret this result as decision support, not final agronomic advice.
-"""
-
+            report_text = generate_climate_aware_report(
+                latitude=latitude,
+                longitude=longitude,
+                start_date=start_date,
+                end_date=end_date,
+                soil_input=soil_input,
+                model_input=model_input,
+                climate_summary=climate_summary,
+                prediction_result=prediction_result,
+                top_recommendations=top_recommendations,
+                climate_risk=climate_risk,
+            )
             st.download_button(
                 label="Download Climate-Aware Report",
                 data=report_text,
@@ -500,11 +689,13 @@ This location-aware feature is experimental. The original model was trained on a
                 mime="text/plain",
             )
 
-            st.caption(
-                "Experimental note: This feature enriches the original model with "
-                "external historical weather data. Results should be interpreted with caution."
+            st.warning(
+                "Experimental feature: this climate-aware recommendation enriches the original "
+                "model with historical weather data from an external API. Because the original "
+                "model was trained on a structured benchmark dataset, external climate values "
+                "may not perfectly match the training distribution. Use this as decision support, "
+                "not final agronomic advice."
             )
-
         except Exception as error:
             st.error("An error occurred while generating the climate-aware recommendation.")
             st.exception(error)
@@ -558,7 +749,7 @@ def main() -> None:
             with col_input:
                 st.markdown("### Current Input Values")
                 input_df = pd.DataFrame([input_data])
-                st.dataframe(input_df, use_container_width=True)
+                st.dataframe(input_df, use_container_width="stretch")
 
             predict_button = st.sidebar.button("Recommend Crop", type="primary")
 
@@ -586,7 +777,7 @@ def main() -> None:
                     st.markdown("### Top 3 Recommendations")
                     top_df = pd.DataFrame(top_recommendations)
                     top_df["probability"] = top_df["probability"].map(lambda x: f"{x:.1%}")
-                    st.dataframe(top_df, use_container_width=True)
+                    st.dataframe(top_df, use_container_width="stretch")
 
                     st.markdown("---")
 
@@ -611,7 +802,7 @@ def main() -> None:
                         height=500,
                     )
 
-                    st.plotly_chart(fig, use_container_width=True)
+                    st.plotly_chart(fig, use_container_width="stretch")
 
                     st.markdown("### Explanation")
                     st.info(explanation_text)
