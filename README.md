@@ -1,4 +1,4 @@
-# CropWise AI: Explainable Crop Recommendation System
+# # CropWise AI: Explainable and Climate-Aware Crop Recommendation System
 
 ![Python](https://img.shields.io/badge/Python-3.11-blue)
 ![Scikit-learn](https://img.shields.io/badge/ML-Scikit--learn-orange)
@@ -23,8 +23,9 @@ Streamlit app: https://cropwise-ai.streamlit.app/
 
 CropWise AI is an end-to-end machine learning crop recommendation system that recommends suitable crops using soil nutrient and climate variables.
 
-The system uses nitrogen, phosphorus, potassium, temperature, humidity, pH, and rainfall values to predict the most suitable crop among 22 crop classes. It also provides model confidence, top crop alternatives, human-readable explanations, and a downloadable recommendation report.
+The system predicts the most suitable crop from nitrogen, phosphorus, potassium, temperature, humidity, pH, and rainfall values. It also provides model confidence, top crop alternatives, human-readable explanations, and downloadable recommendation reports.
 
+The upgraded version includes a location-aware climate-smart recommendation tab. Users can enter latitude, longitude, soil values, and a climate period. The app then fetches historical weather data, summarizes rainfall and temperature patterns, estimates climate risk, and generates a climate-aware crop recommendation.
 ## App Preview
 
 ![CropWise AI App](reports/figures/streamlit_app_screenshot.png)
@@ -41,6 +42,24 @@ The system uses nitrogen, phosphorus, potassium, temperature, humidity, pH, and 
 * Added automated tests for data, model loading, prediction, and explanation functions.
 * Designed the project as a portfolio-ready ML decision-support system.
 
+## Climate-Aware v2 Features
+
+The location-aware version extends the original crop recommendation system by adding external climate enrichment.
+
+New v2 features include:
+
+- Latitude and longitude-based climate lookup
+- Historical weather retrieval using Open-Meteo
+- Rainfall and temperature trend charts
+- Climate summary metrics
+- Dry-day, wet-day, and heavy-rain-day counts
+- Rule-based climate risk scoring
+- Climate risk warnings
+- Climate-aware crop recommendation
+- Downloadable climate-aware recommendation report
+
+This upgrade makes the project more realistic by connecting the original machine learning model with external climate data.
+
 ## Problem Statement
 
 Farmers, agricultural extension workers, and agritech platforms often need quick, data-informed support when choosing suitable crops for specific soil and climate conditions.
@@ -50,6 +69,22 @@ CropWise AI addresses this by building a machine learning-based crop recommendat
 ## Dataset
 
 The dataset contains 2,200 observations and 8 columns.
+
+## External Climate Data
+
+The location-aware version uses historical weather data from Open-Meteo.
+
+The app fetches daily weather variables such as:
+
+- Mean temperature
+- Maximum temperature
+- Minimum temperature
+- Precipitation
+- Rainfall
+
+These values are summarized into crop-relevant climate features, including total rainfall, mean temperature, dry days, wet days, heavy rain days, and rainfall variability.
+
+The external climate layer is used for decision-support enrichment. It does not replace agronomic field validation.
 
 ### Features
 
@@ -212,24 +247,54 @@ SHAP is used in the analysis workflow, while the deployed Streamlit application 
 
 A Streamlit web application was built to make the model interactive and user-friendly.
 
-The app allows users to enter:
+The app contains two main tabs:
 
-* Nitrogen
-* Phosphorus
-* Potassium
-* Temperature
-* Humidity
-* Soil pH
-* Rainfall
+### 1. Manual Recommendation
+
+Users manually enter:
+
+- Nitrogen
+- Phosphorus
+- Potassium
+- Temperature
+- Humidity
+- Soil pH
+- Rainfall
 
 The app returns:
 
-* Recommended crop
-* Model confidence
-* Top 3 crop recommendations
-* Probability chart
-* Human-readable explanation
-* Downloadable recommendation report
+- Recommended crop
+- Model confidence
+- Top 3 crop recommendations
+- Probability chart
+- Human-readable explanation
+- Downloadable recommendation report
+
+### 2. Location-Aware Recommendation
+
+Users enter:
+
+- Latitude
+- Longitude
+- Climate start date
+- Climate end date
+- Nitrogen
+- Phosphorus
+- Potassium
+- Soil pH
+- Humidity
+
+The app fetches historical weather data and returns:
+
+- Historical climate summary
+- Rainfall trend chart
+- Temperature trend chart
+- Recommended crop
+- Top 3 crop recommendations
+- Climate risk score
+- Climate risk level
+- Climate warnings
+- Downloadable climate-aware report
 
 To run the app locally:
 
@@ -274,6 +339,18 @@ cropwise-ai/
 │   └── permutation_importance.csv
 │
 ├── src/
+│   ├── external/
+│   │   ├── __init__.py
+│   │   └── open_meteo.py
+│   │
+│   ├── features/
+│   │    ├── __init__.py
+│   │    └── climate_features.py
+│   │
+│   ├──risks/
+│   │   ├── __init__.py
+│   │   └── yield_risk.py
+│   │
 │   ├── __init__.py
 │   ├── config.py
 │   ├── data_loader.py
@@ -289,11 +366,16 @@ cropwise-ai/
 │   ├── test_data.py
 │   ├── test_model.py
 │   ├── test_prediction.py
-│   └── test_explain.py
+│   ├── test_explain.py
+│   ├── test_climate_features.py
+│   ├── test_open_meteo.py
+│   └── test_yield_risk.py
 │
 ├── .github/
 │   └── workflows/
 │       └── python-ci.yml
+│
+├── check_climate_v2.py
 │
 ├── requirements.txt
 ├── runtime.txt
@@ -365,21 +447,28 @@ The current model does not include:
 
 Therefore, CropWise AI should be interpreted as a crop suitability decision-support tool, not as a replacement for professional agronomic advice, local soil testing, seasonal planning, or field validation.
 
+## Climate-Enriched Recommendation Note
+
+The location-aware feature enriches user inputs with historical weather data from an external API. Because the original crop recommendation model was trained on a structured benchmark dataset, external climate values may not perfectly match the original training distribution.
+
+Therefore, the climate-aware recommendation should be interpreted as an experimental decision-support extension. It should not be used as final agronomic advice without local soil testing, seasonal context, seed variety information, irrigation assessment, pest and disease evaluation, and field validation.
+
 ## Future Improvements
 
 Planned improvements include:
 
-* Add location-based recommendations using latitude and longitude.
-* Integrate historical weather data from NASA POWER or Open-Meteo.
-* Add FAOSTAT or national agricultural production data.
-* Build a crop yield-risk scoring module.
-* Add interactive maps for regional crop suitability.
-* Add API endpoints using FastAPI.
-* Add model monitoring for input drift.
-* Add database support for storing user recommendations.
-* Add user authentication for saved recommendation histories.
-* Extend the app into a climate-smart agriculture decision-support platform.
-
+- Add location search by city or region name.
+- Add interactive map-based location selection.
+- Integrate NASA POWER as a second climate data source.
+- Add seasonal crop calendars.
+- Add soil type and soil texture information.
+- Add crop-specific climate suitability thresholds.
+- Add FAOSTAT or national crop production data.
+- Build a trained yield-risk model using real yield outcomes.
+- Add model monitoring for input drift.
+- Add database support for storing user recommendations.
+- Add user authentication for saved recommendation histories.
+- Extend the app into a climate-smart agriculture decision-support platform.
 ## How to Run Locally
 
 Clone the repository:
@@ -434,20 +523,22 @@ SHAP is used for analysis and notebook explainability, but it is not required fo
 
 ## Technologies Used
 
-* Python
-* Pandas
-* NumPy
-* Scikit-learn
-* Matplotlib
-* Seaborn
-* Plotly
-* Streamlit
-* Joblib
-* SHAP
-* Pytest
-* Ruff
-* Black
-* GitHub Actions
+- Python
+- Pandas
+- NumPy
+- Scikit-learn
+- Matplotlib
+- Seaborn
+- Plotly
+- Streamlit
+- Joblib
+- Requests
+- Open-Meteo API
+- SHAP
+- Pytest
+- Ruff
+- Black
+- GitHub Actions
 
 ## Project Status
 
