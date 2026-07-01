@@ -1,7 +1,6 @@
 import pandas as pd
 import pytest
 
-
 from src.features.climate_features import (
     create_climate_summary,
     create_cropwise_input_from_climate,

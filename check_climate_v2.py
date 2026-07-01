@@ -1,11 +1,10 @@
 from src.external.open_meteo import fetch_historical_weather
 from src.features.climate_features import (
-create_climate_summary,
-create_cropwise_input_from_climate,
+    create_climate_summary,
+    create_cropwise_input_from_climate,
 )
 from src.predict import predict_crop_with_probabilities
 from src.risk.yield_risk import calculate_climate_risk_score
-
 
 weather_df = fetch_historical_weather(
     latitude=6.5244,

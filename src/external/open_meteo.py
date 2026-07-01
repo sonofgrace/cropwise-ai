@@ -3,7 +3,6 @@ from __future__ import annotations
 import pandas as pd
 import requests
 
-
 OPEN_METEO_ARCHIVE_URL = "https://archive-api.open-meteo.com/v1/archive"
 
 

@@ -22,7 +22,8 @@ def test_fetch_historical_weather_returns_dataframe():
     mock_response.json.return_value = fake_response_data
     mock_response.raise_for_status.return_value = None
 
-    with patch("src.external.open_meteo.requests.get", return_value=mock_response):
+    with patch("src.external.open_meteo.requests.get",
+               return_value=mock_response):
         result = fetch_historical_weather(
             latitude=6.5244,
             longitude=3.3792,
@@ -45,7 +46,8 @@ def test_fetch_historical_weather_raises_error_when_daily_missing():
     mock_response.json.return_value = fake_response_data
     mock_response.raise_for_status.return_value = None
 
-    with patch("src.external.open_meteo.requests.get", return_value=mock_response):
+    with patch("src.external.open_meteo.requests.get",
+               return_value=mock_response):
         with pytest.raises(ValueError, match="No daily weather data"):
             fetch_historical_weather(
                 latitude=6.5244,
@@ -71,7 +73,8 @@ def test_fetch_historical_weather_sends_expected_params():
     mock_response.json.return_value = fake_response_data
     mock_response.raise_for_status.return_value = None
 
-    with patch("src.external.open_meteo.requests.get", return_value=mock_response) as mock_get:
+    with patch("src.external.open_meteo.requests.get",
+               return_value=mock_response) as mock_get:
         fetch_historical_weather(
             latitude=6.5244,
             longitude=3.3792,
