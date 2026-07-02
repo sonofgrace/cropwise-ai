@@ -101,49 +101,46 @@ def predict_crop(input_data: dict) -> str:
 
 
 def predict_crop_with_probabilities(input_data: dict) -> dict:
-    """
-    Predict crop and return class probabilities.
-    """
+    """Predict crop and return class probabilities."""
     model = load_model()
     input_df = prepare_input(input_data)
 
     prediction = model.predict(input_df)[0]
-    probabilities = model.predict_proba(input_df)[0]
+    probability_array = model.predict_proba(input_df)[0]
 
-    class_probabilities = dict(
-        zip(model.classes_, probabilities, strict=False)
-    )
+    probabilities = {
+        str(crop): float(probability)
+        for crop, probability in zip(model.classes_, probability_array, strict=False)
+    }
 
     sorted_probabilities = dict(
         sorted(
-            class_probabilities.items(),
+            probabilities.items(),
             key=lambda item: item[1],
-            reverse=True
+            reverse=True,
         )
     )
 
+    confidence = probabilities.get(
+        str(prediction),
+        max(probabilities.values()) if probabilities else 0.0,
+    )
+
     return {
-        "prediction": prediction,
+        "prediction": str(prediction),
+        "confidence": confidence,
         "probabilities": sorted_probabilities,
     }
 
-
 def get_top_n_recommendations(input_data: dict, n: int = 3) -> list[dict]:
-    """
-    Return the top-N crop recommendations with probabilities.
-    """
-    result = predict_crop_with_probabilities(input_data)
-
-    top_items = list(result["probabilities"].items())[:n]
+    """Return top-N crop recommendations with probabilities."""
+    prediction_result = predict_crop_with_probabilities(input_data)
+    probabilities = prediction_result["probabilities"]
 
     return [
-        {
-            "crop": crop,
-            "probability": float(probability),
-        }
-        for crop, probability in top_items
+        {"crop": crop, "probability": probability}
+        for crop, probability in list(probabilities.items())[:n]
     ]
-
 
 if __name__ == "__main__":
     sample_input = {
