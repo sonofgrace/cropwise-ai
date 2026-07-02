@@ -6,9 +6,13 @@ import pandas as pd
 import plotly.express as px
 import streamlit as st
 
+# Allow Streamlit to import from src when app is run from project root
+ROOT_DIR = Path(__file__).resolve().parents[1]
+sys.path.append(str(ROOT_DIR))
+
 from src.explain import explain_prediction, format_explanation  # noqa: E402
-from src.external.open_meteo import fetch_historical_weather
-from src.features.climate_features import (
+from src.external.open_meteo import fetch_historical_weather  # noqa: E402
+from src.features.climate_features import (  # noqa: E402
     create_climate_summary,
     create_cropwise_input_from_climate,
 )
@@ -17,11 +21,7 @@ from src.predict import (  # noqa: E402
     load_model,
     predict_crop_with_probabilities,
 )
-from src.risk.yield_risk import calculate_climate_risk_score
-
-# Allow Streamlit to import from src when app is run from project root
-ROOT_DIR = Path(__file__).resolve().parents[1]
-sys.path.append(str(ROOT_DIR))
+from src.risk.yield_risk import calculate_climate_risk_score  # noqa: E402
 
 
 @st.cache_resource
@@ -795,7 +795,7 @@ def main() -> None:
                     top_df = pd.DataFrame(top_recommendations)
                     top_df["probability"] = top_df["probability"].map(lambda x:
                                                                       f"{x:.1%}")
-                    st.dataframe(top_df, use_container_width="stretch")
+                    st.dataframe(top_df, width="stretch")
 
                     st.markdown("---")
 

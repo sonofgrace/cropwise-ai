@@ -106,13 +106,11 @@ def predict_crop_with_probabilities(input_data: dict) -> dict:
     input_df = prepare_input(input_data)
 
     prediction = model.predict(input_df)[0]
-
     probability_array = model.predict_proba(input_df)[0]
 
     probabilities = {
         str(crop): float(probability)
-        for crop, probability in zip(model.classes_,
-                                     probability_array, strict=False)
+        for crop, probability in zip(model.classes_, probability_array, strict=False)
     }
 
     sorted_probabilities = dict(
@@ -143,7 +141,6 @@ def get_top_n_recommendations(input_data: dict, n: int = 3) -> list[dict]:
         {"crop": crop, "probability": probability}
         for crop, probability in list(probabilities.items())[:n]
     ]
-
 
 if __name__ == "__main__":
     sample_input = {

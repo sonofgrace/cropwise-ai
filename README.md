@@ -1,4 +1,4 @@
-# # CropWise AI: Explainable and Climate-Aware Crop Recommendation System
+#  CropWise AI: Explainable and Climate-Aware Crop Recommendation System
 
 ![Python](https://img.shields.io/badge/Python-3.11-blue)
 ![Scikit-learn](https://img.shields.io/badge/ML-Scikit--learn-orange)
@@ -347,7 +347,7 @@ cropwise-ai/
 │   │    ├── __init__.py
 │   │    └── climate_features.py
 │   │
-│   ├──risks/
+│   ├──risk/
 │   │   ├── __init__.py
 │   │   └── yield_risk.py
 │   │
@@ -469,6 +469,7 @@ Planned improvements include:
 - Add database support for storing user recommendations.
 - Add user authentication for saved recommendation histories.
 - Extend the app into a climate-smart agriculture decision-support platform.
+
 ## How to Run Locally
 
 Clone the repository:
